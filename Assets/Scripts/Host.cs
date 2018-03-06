@@ -13,6 +13,9 @@ using UnityEngine.Profiling;
 using UnityEngine.Assertions;
 using Oculus.Platform;
 using Oculus.Platform.Models;
+using UnityEngine.Networking;
+using System.Collections.Generic;
+using System.Net;
 
 public class Host : Common
 {
@@ -49,6 +52,7 @@ public class Host : Common
         }
     };
 
+    NetworkClient myClient;
     ClientData [] client = new ClientData[Constants.MaxClients];
 
     bool IsClientConnected( int clientIndex )
@@ -105,6 +109,33 @@ public class Host : Common
         localAvatar.GetComponent<Avatar>().SetContext( context.GetComponent<Context>() );
         localAvatar.transform.position = context.GetRemoteAvatar( 0 ).gameObject.transform.position;
         localAvatar.transform.rotation = context.GetRemoteAvatar( 0 ).gameObject.transform.rotation;
+
+        NetworkServer.Listen(4444);
+
+        myClient = ClientScene.ConnectLocalServer();
+        myClient.RegisterHandler(MsgType.Connect, OnConnected);
+    }
+
+    // client function
+    public void OnConnected(NetworkMessage netMsg)
+    {
+        IPHostEntry host;
+        string localIP = "";
+        host = Dns.GetHostEntry(Dns.GetHostName());
+        foreach (IPAddress ip in host.AddressList)
+        {
+            if (ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+            {
+                localIP = ip.ToString();
+                break;
+            }
+        }
+        Debug.Log("Connected to server: "+ localIP);
+    }
+
+    private void OnDestroy()
+    {
+        NetworkServer.Shutdown();
     }
 
     void GetEntitlementCallback( Message msg )
@@ -567,12 +598,32 @@ public class Host : Common
                 serverInfo.clientConnected[i] = true;
                 serverInfo.clientUserId[i] = client[i].userId;
                 serverInfo.clientUserName[i] = client[i].oculusId;
+                if (client[i].userId == client[0].userId )
+                {
+                    IPHostEntry host;
+                    string localIP = "";
+                    host = Dns.GetHostEntry(Dns.GetHostName());
+                    foreach (IPAddress ip in host.AddressList)
+                    {
+                        if (ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+                        {
+                            localIP = ip.ToString();
+                            break;
+                        }
+                    }
+                    serverInfo.clientIp[i] = localIP;
+                }
+                else
+                {
+                    serverInfo.clientIp[i] = "";
+                }
             }
             else
             {
                 serverInfo.clientConnected[i] = false;
                 serverInfo.clientUserId[i] = 0;
                 serverInfo.clientUserName[i] = "";
+                serverInfo.clientIp[i] = "";
             }
         }
 

@@ -14,6 +14,7 @@ using UnityEngine.Assertions;
 using Oculus.Platform;
 using Oculus.Platform.Models;
 using System.Collections.Generic;
+using UnityEngine.Networking;
 
 public class Guest: Common
 {
@@ -56,6 +57,8 @@ public class Guest: Common
     public double timeRetryStarted;                                 // time the retry state started. used to delay in waiting for retry state before retrying matchmaking from scratch.
 
     private byte[] readBuffer = new byte[Constants.MaxPacketSize];
+
+    NetworkClient myClient;
 
     bool IsConnectedToServer()
     {
@@ -627,6 +630,13 @@ public class Guest: Common
                 if ( clientIndex != -1 )
                 {
                     ConnectToServer( clientIndex );
+
+                    int hostIndex = packetServerInfo.FindClientByUserId(hostUserId);
+                    if (hostIndex != -1) {
+                        myClient = new NetworkClient();
+                        myClient.RegisterHandler(MsgType.Connect, OnConnected);
+                        myClient.Connect(packetServerInfo.clientIp[hostIndex], 4444);
+                    }
                 }
                 else
                 {
@@ -659,6 +669,12 @@ public class Guest: Common
         }
 
         Profiler.EndSample();
+    }
+
+    // client function
+    public void OnConnected(NetworkMessage netMsg)
+    {
+        Debug.Log("Connected to server");
     }
 
     void OnRemoteClientConnected( int clientIndex, ulong userId, string userName )

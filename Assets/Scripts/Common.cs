@@ -71,6 +71,7 @@ public class Common: MonoBehaviour
         public bool[] clientConnected = new bool[Constants.MaxClients];
         public ulong[] clientUserId = new ulong[Constants.MaxClients];
         public string[] clientUserName = new string[Constants.MaxClients];
+        public string[] clientIp = new string[Constants.MaxClients];
 
         public void Clear()
         {
@@ -79,6 +80,7 @@ public class Common: MonoBehaviour
                 clientConnected[i] = false;
                 clientUserId[i] = 0;
                 clientUserName[i] = "";
+                clientIp[i] = "";
             }
         }
 
@@ -89,6 +91,7 @@ public class Common: MonoBehaviour
                 clientConnected[i] = other.clientConnected[i];
                 clientUserId[i] = other.clientUserId[i];
                 clientUserName[i] = other.clientUserName[i];
+                clientIp[i] = other.clientIp[i];
             }
         }
 
