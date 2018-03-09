@@ -11,6 +11,12 @@ using UnityEngine.Networking;
 public class Goal : MonoBehaviour {
     //set in the scene view
     public int goalIndex = -1;
+    Host host;
+
+	private void Start()
+	{
+        host = FindObjectOfType<Host>();
+	}
 
 	private void OnTriggerExit(Collider other)
 	{
@@ -21,8 +27,12 @@ public class Goal : MonoBehaviour {
             //if not default authority, and not my authority
             if (authorityIndex != 0 && authorityIndex != goalIndex + 1)
             {
-                //register a scored point (from authIndex - 1 (is senderId), to this clientId (same as goalId))
-                EventManager.playerScored(PacketSerializer.GameEvent.SCORE, (ushort)(authorityIndex - 1), (ushort)goalIndex);
+                //check if this player is currently connected
+                if (host.IsClientConnected(goalIndex))
+                {
+                    //register a scored point (from authIndex - 1 (is senderId), to this clientId (same as goalId))
+                    EventManager.playerScored(PacketSerializer.GameEvent.SCORE, (ushort)(authorityIndex - 1), (ushort)goalIndex);
+                }
             }
         }
 	}

@@ -54,7 +54,7 @@ public class Host : Common
 
     ClientData [] client = new ClientData[Constants.MaxClients];
 
-    bool IsClientConnected( int clientIndex )
+    public bool IsClientConnected( int clientIndex )
     {
         Assert.IsTrue( clientIndex >= 0 );
         Assert.IsTrue( clientIndex < Constants.MaxClients );
