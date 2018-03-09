@@ -531,16 +531,20 @@ public class Guest: Common
             if ( !IsConnectedToServer() )
                 continue;
 
-            if ( packetType == (byte) PacketSerializer.PacketType.StateUpdate )
+            if (packetType == (byte)PacketSerializer.PacketType.StateUpdate)
             {
-                if ( enableJitterBuffer )
+                if (enableJitterBuffer)
                 {
-                    AddStateUpdatePacketToJitterBuffer( context, context.GetClientConnectionData(), readBuffer );
+                    AddStateUpdatePacketToJitterBuffer(context, context.GetClientConnectionData(), readBuffer);
                 }
                 else
                 {
-                    ProcessStateUpdatePacket( context.GetClientConnectionData(), readBuffer );
+                    ProcessStateUpdatePacket(context.GetClientConnectionData(), readBuffer);
                 }
+            }
+            else if (packetType == (byte)PacketSerializer.PacketType.GameEvent)
+            {
+                ProcessGameEventPacket(readBuffer);
             }
 
             timeLastPacketReceived = renderTime;
@@ -764,6 +768,27 @@ public class Guest: Common
         }
 
         Profiler.EndSample();
+    }
+
+    //Game event packet
+    public void ProcessGameEventPacket(byte[] packetData)
+    {
+        //TODO: BLA
+        PacketSerializer.GameEvent eventType = PacketSerializer.GameEvent.SCORE;
+        ushort senderId = 0, targetId = 0;
+        ushort[] perClientData = new ushort[Constants.MaxClients];
+
+        if ( ReadGameEventPacket( packetData, ref eventType, ref senderId, ref targetId, ref perClientData ) )
+        {
+            switch( eventType ) {
+                case PacketSerializer.GameEvent.SCORE:
+                    if ( clientIndex == targetId ) {
+                        //TODO: react to this
+                    }
+                    ScoreManager.SetScores(perClientData);
+                    break;
+            }
+        }
     }
 
     void ProcessAcks()

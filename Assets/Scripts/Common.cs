@@ -259,6 +259,54 @@ public class Common: MonoBehaviour
         connectionData.connection.ProcessPacketHeader( ref entry.packetHeader );
     }
 
+    protected bool WriteGameEventPacket( PacketSerializer.GameEvent eventType, ushort senderId, ushort targetId, ushort[] perClientData ) {
+        Profiler.BeginSample("WriteGameEventPacket");
+
+        writeStream.Start(packetBuffer);
+
+        bool result = true;
+
+        try
+        {
+            packetSerializer.WriteGameEventPacket(writeStream, eventType, senderId, targetId, perClientData);
+            writeStream.Finish();
+        }
+        catch (Network.SerializeException)
+        {
+            Debug.Log("error: failed to write game event packet");
+            result = false;
+        }
+
+        Profiler.EndSample();
+
+        return result;
+    }
+
+    protected bool ReadGameEventPacket( byte[] packetData, ref PacketSerializer.GameEvent eventType, ref ushort senderId, ref ushort targetId, ref ushort[] perClientData )
+    {
+        Profiler.BeginSample("ReadGameEventPacket");
+
+        readStream.Start(packetData);
+
+        bool result = true;
+
+        try
+        {
+            packetSerializer.ReadGameEventPacket(readStream, ref eventType, ref senderId, ref targetId, ref perClientData);
+        }
+        catch (Network.SerializeException)
+        {
+            Debug.Log("error: failed to read server info packet");
+            result = false;
+        }
+
+        readStream.Finish();
+
+        Profiler.EndSample();
+
+        return result;
+    }
+
     protected bool WriteServerInfoPacket( bool[] clientConnected, ulong[] clientUserId, string[] clientUserName )
     {
         Profiler.BeginSample( "WriteServerInfoPacket" );

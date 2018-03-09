@@ -52,7 +52,6 @@ public class Host : Common
         }
     };
 
-    NetworkClient myClient;
     ClientData [] client = new ClientData[Constants.MaxClients];
 
     bool IsClientConnected( int clientIndex )
@@ -108,34 +107,41 @@ public class Host : Common
 
         localAvatar.GetComponent<Avatar>().SetContext( context.GetComponent<Context>() );
         localAvatar.transform.position = context.GetRemoteAvatar( 0 ).gameObject.transform.position;
-        localAvatar.transform.rotation = context.GetRemoteAvatar( 0 ).gameObject.transform.rotation;
+        localAvatar.transform.rotation = context.GetRemoteAvatar(0).gameObject.transform.rotation;
 
-        NetworkServer.Listen(4444);
-
-        myClient = ClientScene.ConnectLocalServer();
-        myClient.RegisterHandler(MsgType.Connect, OnConnected);
+        EventManager.playerScored += ProcessPlayerScored;
+        ScoreManager.Reset();
     }
 
-    // client function
-    public void OnConnected(NetworkMessage netMsg)
-    {
-        IPHostEntry host;
-        string localIP = "";
-        host = Dns.GetHostEntry(Dns.GetHostName());
-        foreach (IPAddress ip in host.AddressList)
+    void ProcessPlayerScored(PacketSerializer.GameEvent eventType, ushort senderId, ushort targetId ) {
+        //handle locally
+        ScoreManager.HandleScore(senderId, targetId);
+
+        ushort[] perClientScores = ScoreManager.GetScores();
+
+        //send to clients other than myself
+        byte[] packetData = GeneratePlayerScoredPacket(eventType, senderId, targetId, perClientScores);
+
+        for (int clientIndex = 1; clientIndex < Constants.MaxClients; ++clientIndex)
         {
-            if (ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
-            {
-                localIP = ip.ToString();
-                break;
-            }
+            if (!IsClientConnected(clientIndex))
+                continue;
+
+            Context.ConnectionData connectionData = context.GetServerConnectionData(clientIndex);
+
+            Net.SendPacket(client[clientIndex].userId, packetData, SendPolicy.Unreliable);
+
+            client[clientIndex].timeLastPacketSent = renderTime;
         }
-        Debug.Log("Connected to server: "+ localIP);
     }
 
-    private void OnDestroy()
+    public byte[] GeneratePlayerScoredPacket(PacketSerializer.GameEvent eventType, ushort senderId, ushort targetId, ushort[] perClientScores)
     {
-        NetworkServer.Shutdown();
+        WriteGameEventPacket(eventType, senderId, targetId, perClientScores);
+
+        byte[] packetData = writeStream.GetData();
+
+        return packetData;
     }
 
     void GetEntitlementCallback( Message msg )
