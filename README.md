@@ -32,6 +32,7 @@ Extended from the VR Networked Physics article / source by Glenn Fiedler (thanks
 
 ### Known issues:
 * Vive clients will disconnect intermittently
+* Hosts are OP, because the cubes they are holding also register scoring events (client's held cubes do not!)
 
 ### Attributions:
 * Sounds effects taken from various Freesound users (id__user__soundname):
