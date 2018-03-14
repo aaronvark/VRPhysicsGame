@@ -21,7 +21,7 @@ public class Goal : MonoBehaviour {
         boxVisual = GetComponentInChildren<Renderer>();
 	}
 
-	private void OnTriggerExit(Collider other)
+	private void OnTriggerEnter(Collider other)
 	{
         //hit by a cube
         NetworkInfo cubeInfo = other.GetComponent<NetworkInfo>();
@@ -40,10 +40,14 @@ public class Goal : MonoBehaviour {
 	}
 
     IEnumerator ConnectiveVisibility() {
-        yield return new WaitForSeconds(1f);
-        //check once per second if client is connect, activate box visual if it is
-        if ( host && boxVisual ) {
-            boxVisual.enabled = host.IsClientConnected(goalIndex);
+        while (Application.isPlaying)
+        {
+            yield return new WaitForSeconds(1f);
+            //check once per second if client is connect, activate box visual if it is
+            if (host && boxVisual)
+            {
+                boxVisual.enabled = host.IsClientConnected(goalIndex);
+            }
         }
     }
 }
