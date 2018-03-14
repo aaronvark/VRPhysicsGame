@@ -2,10 +2,32 @@
 Based on the VR Networked Physics from Glenn Fiedler.
 
 ### How to use this:
-* Make sure to run it with Unity 5.5.2
-* Make sure the host is an actual Oculus Rift
+
+#### Easy part
+* Make sure to run it with Unity 5.5.x
+* Make sure the host is an actual Oculus Rift (it's best just to use Rifts)
 * When using a Vive, set Unity, Revive Dashboard & Revive Inject to run as administrator
-* When testing locally (with two VR setups), make sure to use a different Oculus account for each device
+
+#### Technical part (oculus developer account & quickmatch room & query)
+* Create an Oculus Develop account, create a new App, and add the appId in "Oculus Platform -> Edit Settings" as the Rift ID 
+ - You can find this under the "Getting Started API" page, in your developer account under "Manage -> [name]"
+
+* Create a new "room pool" under "Platform Services -> Rooms and Matchmaking"
+ - The key should be "VRNetwork_Test_Key" (I changed this, the original was "quickmatch")
+ - The mode should be QuickMatch, min 2, max 4 users, None skill pool, and yes to all questions
+ - I used 500/200 as acceptable/good ping times
+* After creating the pool, select the "..." and hit "Manage Queries"
+* Hit "Edit Data Settings" and add a Data Setting with the following setup:
+ - key: version
+ - type: integer
+ - default value: 0
+* Add a "quickmatch_query" query, with the following setup:
+ - Importance: required
+ - their "version" is (=) my "version" (check datasetting)
+
+#### Finally
+* Make sure to use a different Oculus account for each device
+ - Either set each computer up with different user tokens, or login to Oculus with different accounts
 
 ### Known issues:
 * Vive clients will disconnect intermittently
