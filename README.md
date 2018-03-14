@@ -28,7 +28,7 @@ Based on the VR Networked Physics from Glenn Fiedler.
 
 #### Finally
 * Make sure to use a different Oculus account for each device
- * Either set each computer up with different user tokens, or login to Oculus with different accounts
+  - Either set each computer up with different user tokens, or login to Oculus with different accounts
 
 ### Known issues:
 * Vive clients will disconnect intermittently
