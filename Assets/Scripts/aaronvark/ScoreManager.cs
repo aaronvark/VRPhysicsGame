@@ -16,6 +16,7 @@ public class ScoreManager : MonoBehaviour {
     //for host
     public static void HandleScore( ushort sender, ushort target ) {
         clientScores[sender]++;
+
         Notify();
     }
 

@@ -117,6 +117,16 @@ public class Host : Common
         //handle locally
         ScoreManager.HandleScore(senderId, targetId);
 
+        if (targetId == 0) {    //server
+            SFX.Play(SFXType.SCORED_OTHER);
+        }
+        else if (senderId == 0) {
+            SFX.Play(SFXType.SCORED_OTHER);
+        }
+        else {
+            SFX.Play(SFXType.SCORED_UNRELATED);
+        }
+
         ushort[] perClientScores = ScoreManager.GetScores();
 
         //send to clients other than myself

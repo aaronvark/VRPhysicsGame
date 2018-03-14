@@ -12,10 +12,13 @@ public class Goal : MonoBehaviour {
     //set in the scene view
     public int goalIndex = -1;
     Host host;
+    Renderer boxVisual;
 
 	private void Start()
 	{
         host = FindObjectOfType<Host>();
+        StartCoroutine(ConnectiveVisibility());
+        boxVisual = GetComponentInChildren<Renderer>();
 	}
 
 	private void OnTriggerExit(Collider other)
@@ -27,8 +30,7 @@ public class Goal : MonoBehaviour {
             //if not default authority, and not my authority
             if (authorityIndex != 0 && authorityIndex != goalIndex + 1)
             {
-                //check if this player is currently connected
-                if (host.IsClientConnected(goalIndex))
+                if ( host.IsClientConnected(goalIndex))
                 {
                     //register a scored point (from authIndex - 1 (is senderId), to this clientId (same as goalId))
                     EventManager.playerScored(PacketSerializer.GameEvent.SCORE, (ushort)(authorityIndex - 1), (ushort)goalIndex);
@@ -36,4 +38,12 @@ public class Goal : MonoBehaviour {
             }
         }
 	}
+
+    IEnumerator ConnectiveVisibility() {
+        yield return new WaitForSeconds(1f);
+        //check once per second if client is connect, activate box visual if it is
+        if ( host && boxVisual ) {
+            boxVisual.enabled = host.IsClientConnected(goalIndex);
+        }
+    }
 }

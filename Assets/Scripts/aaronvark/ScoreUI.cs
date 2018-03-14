@@ -10,6 +10,7 @@ public class ScoreUI : MonoBehaviour {
     private void Start()
     {
         ScoreManager.scoreChanged += UpdateUI;
+        textMesh = GetComponent<TextMesh>();
     }
 
     void UpdateUI()

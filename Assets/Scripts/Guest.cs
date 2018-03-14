@@ -58,8 +58,6 @@ public class Guest: Common
 
     private byte[] readBuffer = new byte[Constants.MaxPacketSize];
 
-    NetworkClient myClient;
-
     bool IsConnectedToServer()
     {
         return state == GuestState.Connected;
@@ -633,14 +631,7 @@ public class Guest: Common
 
                 if ( clientIndex != -1 )
                 {
-                    ConnectToServer( clientIndex );
-
-                    int hostIndex = packetServerInfo.FindClientByUserId(hostUserId);
-                    if (hostIndex != -1) {
-                        myClient = new NetworkClient();
-                        myClient.RegisterHandler(MsgType.Connect, OnConnected);
-                        myClient.Connect(packetServerInfo.clientIp[hostIndex], 4444);
-                    }
+                    ConnectToServer(clientIndex);
                 }
                 else
                 {
@@ -782,9 +773,17 @@ public class Guest: Common
         {
             switch( eventType ) {
                 case PacketSerializer.GameEvent.SCORE:
-                    if ( clientIndex == targetId ) {
-                        //TODO: react to this
+
+                    if (targetId == clientIndex ) {    //server
+                        SFX.Play(SFXType.SCORED_OTHER);
                     }
+                    else if (senderId == clientIndex) {
+                        SFX.Play(SFXType.SCORED_SELF);
+                    }
+                    else {
+                        SFX.Play(SFXType.SCORED_UNRELATED);
+                    }
+
                     ScoreManager.SetScores(perClientData);
                     break;
             }
