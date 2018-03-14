@@ -121,7 +121,7 @@ public class Host : Common
             SFX.Play(SFXType.SCORED_OTHER);
         }
         else if (senderId == 0) {
-            SFX.Play(SFXType.SCORED_OTHER);
+            SFX.Play(SFXType.SCORED_SELF);
         }
         else {
             SFX.Play(SFXType.SCORED_UNRELATED);

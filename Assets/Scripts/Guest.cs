@@ -774,7 +774,7 @@ public class Guest: Common
             switch( eventType ) {
                 case PacketSerializer.GameEvent.SCORE:
 
-                    if (targetId == clientIndex ) {    //server
+                    if (targetId == clientIndex ) {
                         SFX.Play(SFXType.SCORED_OTHER);
                     }
                     else if (senderId == clientIndex) {
