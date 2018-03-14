@@ -1,5 +1,5 @@
 # VRPhysicsGame
-Based on the VR Networked Physics article / source by Glenn Fiedler (thanks so much for such a cool example!): https://gafferongames.com/post/networked_physics_in_virtual_reality/
+Extended from the VR Networked Physics article / source by Glenn Fiedler (thanks so much for such a cool example!): https://gafferongames.com/post/networked_physics_in_virtual_reality/
 
 ### How to use this:
 
