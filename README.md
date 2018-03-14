@@ -14,6 +14,7 @@ Based on the VR Networked Physics from Glenn Fiedler.
 
 * Create a new "room pool" under "Platform Services -> Rooms and Matchmaking"
   - The key should be "VRNetwork_Test_Key" (I changed this, the original was "quickmatch")
+    - (I intend to change it back again)
   - The mode should be QuickMatch, min 2, max 4 users, None skill pool, and yes to all questions
   - I used 500/200 as acceptable/good ping times
 * After creating the pool, select the "..." and hit "Manage Queries"
