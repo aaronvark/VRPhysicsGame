@@ -22,6 +22,8 @@ Then I decided on a basic structure of the data of a GameEvent:
 * a short for the targetId (player index)
 * an array of shorts for the "event value" for all players (like scores)
 
+The last one I added specifically to prevent "drift" between players that did or did not receive score updates. If a player joined later, and only received "somebody scored", and not absolute values, they wouldn't agree about what the current score values were. I also thought adding a separate "all scores" packet for when clients joined would be too much of a bother for something as simple as sending 4 additional shorts per score event (something that doesn't happen more than a few times per second).
+
 ## Read/Write packet functions
 Once I had this, I copy pasted the Read/Write packet functions for ServerInfo (currently you can still spot a non-corrected Debug Log in one of them), and edited how the packet was packed/unpacked to coincide with the above structure.
 
