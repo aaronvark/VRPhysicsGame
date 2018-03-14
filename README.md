@@ -10,6 +10,12 @@ How to use this:
 Known issues:
 * Vive clients will disconnect intermittently
 
+Attributions:
+* Sounds effects taken from various Freesound users (id__user__soundname):
+  - 19301__starrock__pen6
+  - 315725__nabz871__tonal-impact-e
+  - 376816__original-sound__impact
+
 ## How I added stuff
 
 # Game Events
@@ -33,10 +39,10 @@ To find out what to do next, I checked where the read/write packet functions wer
 ## Implementing the send/receive events
 Then we finally arrive at, "ok, so when do we actually use these packet read/write functions?"
 
-Again, I checked one layer up where these functions were called, and this is where we get to the Guest and Host classes. At this point we need to decide who will be sending what, and to whom. My idea was as follows for the ''GameEvent.Score'':
+Again, I checked one layer up where these functions were called, and this is where we get to the Guest and Host classes. At this point we need to decide who will be sending what, and to whom. My idea was as follows for the <i>GameEvent.Score</i>:
 * Server does all collision testing
 * Server handles score locally (incremental + feedback in UI & sfx etc.)
-* Server sends all scores, including information about "who scored against who" (sender/target) to ''all clients''
+* Server sends all scores, including information about "who scored against who" (sender/target) to <i>all clients</i>
 * Clients receive all scores each time anybody scores, and update UI / play sounds, etc.
 
 This made it pretty simple. I would only need to have some kind of "event push" happening on the Server, and then send a packet to all clients. Clients only need to respond to scoring as an incoming packet.
@@ -44,9 +50,9 @@ This made it pretty simple. I would only need to have some kind of "event push" 
 ## Implementing Scoring
 To implement scoring I added an <i>EventManager</i>, as a static class where events could be triggered globally. This contains an event for when a player scores, which only the Host registers itself to.
 
-The ''Goal'' class is attached to BoxColliders that are only present in the Host scene, and when a cube enter this (a layer was added to make sure nothing else was registered), its ''authority index'' is compared to the goal's player index. This is quite simple, because:
+The <i>Goal</i> class is attached to BoxColliders that are only present in the Host scene, and when a cube enter this (a layer was added to make sure nothing else was registered), its <i>authority index</i> is compared to the goal's player index. This is quite simple, because:
 * The authority index (0 = nobody, 1-4 = playerId 0-3) is "who handled the cube last"
-* The goal's playerId is ''scene static'', meaning that player0 (server) always stands on the Blue spot, player1 (a client) always stands on the Red spot, etc.
+* The goal's playerId is <i>scene static</i>, meaning that player0 (server) always stands on the Blue spot, player1 (a client) always stands on the Red spot, etc.
 
 If the id's don't match (another player's cube entered this goal) a "scored" event is triggered with the two Id's as arguments (cube's id = sender, goal id = target), and a dump of the ScoreManager's score array for all players.
 
@@ -54,7 +60,7 @@ If the id's don't match (another player's cube entered this goal) a "scored" eve
 The Host, who's listeneing for Score Events, receives this message. First it locally updates the score (and plays the necessary SFX), and then it writes a GameEvent package using the functions we wrote earlier, and loops through the client's (I stole this, again, from the ServerInfo packet because the lines of communication of that packet are very similar to this particular GameEvent).
 
 ## Client handles packet
-When the client receives this packet, it is checked for in the same place where other packets are received in Guest.cs, so adding new packet types requires you to add logic for them here as well. Once we confirm it is a GameEvent, we call the ProcessGameEvent function. There we unpack all of the data, which I've chosen to do with local variables that are sent as ''ref'' into the ReadPacket function.
+When the client receives this packet, it is checked for in the same place where other packets are received in Guest.cs, so adding new packet types requires you to add logic for them here as well. Once we confirm it is a GameEvent, we call the ProcessGameEvent function. There we unpack all of the data, which I've chosen to do with local variables that are sent as <i>ref</i> into the ReadPacket function.
 
 I noticed other functions didn't do this, but they also used classes of which array's would be modified, which I assume prevents them from being "passed by value", and therefore don't require the ref keyword.
 
