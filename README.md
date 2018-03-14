@@ -22,7 +22,7 @@ Then I decided on a basic structure of the data of a GameEvent:
 * a short for the targetId (player index)
 * an array of shorts for the "event value" for all players (like scores)
 
-The last one I added specifically to prevent "drift" between players that did or did not receive score updates. If a player joined later, and only received "somebody scored", and not absolute values, they wouldn't agree about what the current score values were. I also thought adding a separate "all scores" packet for when clients joined would be too much of a bother for something as simple as sending 4 additional shorts per score event (something that doesn't happen more than a few times per second).
+The last one I added specifically to prevent <i>drift</i> between players that did or did not receive score updates. If a player joined later, and only received "somebody scored", and not absolute values, they wouldn't agree about what the current score values were. I also thought adding a separate "all scores" packet for when clients joined would be too much of a bother for something as simple as sending 4 additional shorts per score event (something that doesn't happen more than a few times per second).
 
 ## Read/Write packet functions
 Once I had this, I copy pasted the Read/Write packet functions for ServerInfo (currently you can still spot a non-corrected Debug Log in one of them), and edited how the packet was packed/unpacked to coincide with the above structure.
@@ -42,7 +42,7 @@ Again, I checked one layer up where these functions were called, and this is whe
 This made it pretty simple. I would only need to have some kind of "event push" happening on the Server, and then send a packet to all clients. Clients only need to respond to scoring as an incoming packet.
 
 ## Implementing Scoring
-To implement scoring I added an ''EventManager'', as a static class where events could be triggered globally. This contains an event for when a player scores, which only the Host registers itself to.
+To implement scoring I added an <i>EventManager</i>, as a static class where events could be triggered globally. This contains an event for when a player scores, which only the Host registers itself to.
 
 The ''Goal'' class is attached to BoxColliders that are only present in the Host scene, and when a cube enter this (a layer was added to make sure nothing else was registered), its ''authority index'' is compared to the goal's player index. This is quite simple, because:
 * The authority index (0 = nobody, 1-4 = playerId 0-3) is "who handled the cube last"
