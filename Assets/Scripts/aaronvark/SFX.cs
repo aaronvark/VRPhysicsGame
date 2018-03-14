@@ -41,7 +41,8 @@ public class SFX : MonoBehaviour {
     }
 
     void PlaySound(SFXType sound) {
-        AudioSource source = sources[currentSource++];
+        AudioSource source = sources[currentSource];
+        currentSource = currentSource++ % NUM_SOURCES;
 
         source.clip = clips[(int)sound];
         source.Play();
